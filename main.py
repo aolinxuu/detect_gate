@@ -1,9 +1,9 @@
-from readVid import read_video
-from process import process_video
+from process import process_video, read_video
 import numpy as np
-import torch
-from dotenv import load_dotenv
-import os
+from ultralytics import YOLO
+# from dotenv import load_dotenv
+# import os
+
 
 # Define the polygon coordinates
 polygon = np.array([
@@ -11,15 +11,14 @@ polygon = np.array([
 ])
 
 # Load the model
-
-
 def load_model():
-    model = torch.hub.load('ultralytics/yolov5', 'yolov5s', pretrained=True)
+    model = YOLO('yolov8n.pt')  # load an official detection model
     return model
 
 
 # Read and process the video
-load_dotenv()
-video_path = os.getenv('video')
+# load_dotenv()
+# video_path = os.getenv('video')
+video_path = "C:\\Users\\aolin\\Videos\\sample1.mp4"
 read_video(video_path)
-process_video(load_model(), video_path, polygon)
+process_video(load_model(), video_path)
