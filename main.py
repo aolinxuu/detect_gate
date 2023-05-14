@@ -1,8 +1,8 @@
+import os
 from process import process_video, read_video
 import numpy as np
 from ultralytics import YOLO
-# from dotenv import load_dotenv
-# import os
+from dotenv import load_dotenv
 
 
 # Define the polygon coordinates
@@ -17,8 +17,8 @@ def load_model():
 
 
 # Read and process the video
-# load_dotenv()
-# video_path = os.getenv('video')
-video_path = "C:\\Users\\aolin\\Videos\\sample1.mp4"
+load_dotenv()
+video_path = os.getenv("video_path")
+
 read_video(video_path)
 process_video(load_model(), video_path)
