@@ -67,3 +67,5 @@ def process_video(model, video_path):
             break
 
     cv2.destroyAllWindows()
+    
+# test
