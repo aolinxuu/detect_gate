@@ -21,12 +21,18 @@ def read_video(video_path):
 
 def process_video(model, video_path):
     # Define and initiate the polygon coordinates
+    # polygon = np.array([
+    #     [409, 590], 
+    #     [417, 676], 
+    #     [468, 669], 
+    #     [463, 585]
+    # ])
+
     polygon = np.array([
-        [420, 590], 
-        [428, 666], 
-        [472, 658], 
-        [464, 582], 
-        [420, 590]
+        [350, 500], 
+        [350, 750], 
+        [500, 750], 
+        [500, 500]
     ])
 
     video_info = sv.VideoInfo.from_video_path(video_path=video_path)
@@ -51,6 +57,7 @@ def process_video(model, video_path):
         detections = sv.Detections.from_yolov8(results)
         # detections = detections.filter_by_polygon(polygon)
         detections = detections[detections.class_id == 0]
+        zone.trigger(detections=detections)
         
         box_labels = [
             f"{model.model.names[class_id]} {confidence:0.2f}"
