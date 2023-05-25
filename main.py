@@ -34,8 +34,8 @@ def crop_video(video_path, filename, directory):
     # Rename file
     suffix = "_resized"
     name, ext = os.path.splitext(filename)
-    new_filename = 'videos/' + name + suffix + ext
-    return_file = directory + '/' + name + suffix + ext
+    new_filename = os.path.join('videos', name + suffix + ext)
+    return_file = os.path.join(directory, name + suffix + ext)
 
     # Output
     fourcc = cv2.VideoWriter_fourcc(*'mp4v')
