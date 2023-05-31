@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 
 # Load the model
 def load_model():
-    model = YOLO('yolov8n.pt')  # load an official detection model
+    model = YOLO('yolov8n.pt')
     return model
 
 
