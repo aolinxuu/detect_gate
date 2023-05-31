@@ -8,7 +8,6 @@ from dotenv import load_dotenv
 
 # Load the model
 def load_model():
-    # load an official detection model
     model = YOLO('yolov8n.pt')
     return model
 
@@ -72,11 +71,21 @@ def main():
 
     # Retrieve file path and filename suffix
     video_path = os.getenv("video_path")
+
+    # If not file at location
+    if not os.path.exists(video_path):
+        raise FileNotFoundError(f"Video not found at path: {video_path}")
+
     filename, directory = os.path.basename(
         video_path), os.path.dirname(video_path)
 
     # Resize and read video into model
     resized_path = crop_video(video_path, filename, directory)
+
+    # If not file at location
+    if not os.path.exists(resized_path):
+        raise FileNotFoundError(f"Video not found at path: {resized_path}")
+
     read_video(resized_path)
     process_video(load_model(), resized_path)
 
