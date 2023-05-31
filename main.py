@@ -5,32 +5,25 @@ from ultralytics import YOLO
 from dotenv import load_dotenv
 
 
-# Load the model
 def load_model():
-    model = YOLO('yolov8n.pt')
-    return model
+    """Load the YOLO model."""
+    return YOLO('yolov8n.pt')
 
 
-# Read and process the video
-def main():
-    load_dotenv()
-    video_path = os.getenv("video_path")
-    output_directory = os.path.dirname(video_path)  # Get the directory of the input video
-
-    # Create a copy of the video in the same folder
-    video_filename = os.path.basename(video_path)
-    video_copy_path = os.path.join(output_directory, "copy_" + video_filename)
-
-    # Open the original video
+def get_video_properties(video_path):
+    """Get properties of the video."""
     cap = cv2.VideoCapture(video_path)
 
-    # Get the video properties
     fps = cap.get(cv2.CAP_PROP_FPS)
     frame_size = (
         int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)),
-        int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
-    )
+        int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT)))
 
+    return cap, fps, frame_size
+
+
+def crop_video(cap, fps, frame_size, video_copy_path):
+    """Crop the video and save to a new file."""
     # Define the cropping values
     x, y = int(frame_size[0] / 22.5 * 7), int(frame_size[1] / 17 * 9)
     h, w = int(frame_size[1] / 17 * 13), int(frame_size[0] / 22.5 * 10)
@@ -52,9 +45,27 @@ def main():
     cap.release()
     out.release()
 
-    # Read and process the cropped video
+
+def process_cropped_video(video_copy_path):
+    """Read and process the cropped video."""
     read_video(video_copy_path)
     process_video(load_model(), video_copy_path)
+
+
+def main():
+    """Main function."""
+    load_dotenv()
+    video_path = os.getenv("video_path")
+    # Get the directory of the input video
+    output_directory = os.path.dirname(video_path)
+
+    # Create a copy of the video in the same folder
+    video_filename = os.path.basename(video_path)
+    video_copy_path = os.path.join(output_directory, "copy_" + video_filename)
+
+    cap, fps, frame_size = get_video_properties(video_path)
+    crop_video(cap, fps, frame_size, video_copy_path)
+    process_cropped_video(video_copy_path)
 
 
 if __name__ == "__main__":
