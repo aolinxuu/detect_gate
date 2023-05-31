@@ -22,8 +22,8 @@ def read_video(video_path):
 def process_video(model, video_path):
 
     polygon = np.array([
-        [410, 675],
-        [463, 665]
+        [0, 150],
+        [100, 150]
     ])
 
 
