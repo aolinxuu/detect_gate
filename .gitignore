@@ -17,8 +17,10 @@ eggs/
 lib/
 lib64/
 parts/
+reports/
 sdist/
 var/
+videos/
 wheels/
 pip-wheel-metadata/
 share/python-wheels/
