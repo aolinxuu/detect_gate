@@ -1,7 +1,6 @@
 import os
 import cv2
-# from process import process_video, read_video
-from process import Tracker
+from process import process_video, read_video
 from ultralytics import YOLO
 from dotenv import load_dotenv
 
@@ -52,10 +51,10 @@ def main():
     # Release the video capture and writer objects
     cap.release()
     out.release()
-    tracker_instance = Tracker()
+
     # Read and process the cropped video
-    tracker_instance.read_video(video_copy_path)
-    tracker_instance.process_video(load_model(), video_copy_path)
+    read_video(video_copy_path)
+    process_video(load_model(), video_copy_path)
 
 
 if __name__ == "__main__":
