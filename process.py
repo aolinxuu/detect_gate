@@ -2,7 +2,7 @@ import cv2
 import supervision as sv
 import numpy as np
 
-def read_video(self, video_path):
+def read_video(video_path):
     vid = cv2.VideoCapture(video_path)
     print('sucessfully opened video')
     if not vid.isOpened():
@@ -24,7 +24,7 @@ def read_video(self, video_path):
     vid.release()
 
 
-def process_video(self, model, video_path):
+def process_video(model, video_path):
 
     polygon = np.array([
         [0, 150],
@@ -51,7 +51,7 @@ def process_video(self, model, video_path):
 
     counter = 0
 
-    for frame in self.read_video(video_path):
+    for frame in read_video(video_path):
         results = model(frame)[0]
         detections = sv.Detections.from_yolov8(results)
         # detections = detections.filter_by_polygon(polygon)
