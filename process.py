@@ -1,16 +1,14 @@
 import cv2
-import supervision as sv
 import numpy as np
 
 def read_video(video_path):
     vid = cv2.VideoCapture(video_path)
-    print('sucessfully opened video')
+    print('successfully opened video')
     if not vid.isOpened():
         print('Error opening video file')
         exit()
 
     count = 0
-
     while True:
         ret, frame = vid.read()
         if not ret:
@@ -18,71 +16,38 @@ def read_video(video_path):
         count += 1
         if count % 3 != 0:
             continue
-
         yield frame
 
     vid.release()
 
 
 def process_video(model, video_path):
-
-    polygon = np.array([
-        [0, 150],
-        [100, 150]
-    ])
-
-
-    video_info = sv.VideoInfo.from_video_path(video_path=video_path)
-    zone = sv.PolygonZone(polygon = polygon, frame_resolution_wh = video_info.resolution_wh)
-
-    # Creates an instance of the BoxAnnotator class from supervision to detect and label
-    box_annotator = sv.BoxAnnotator(
-        thickness=2,
-        text_thickness=1,
-        text_scale=1
-    )
-    zone_annotator = sv.PolygonZoneAnnotator(
-        zone=zone, 
-        color=sv.Color.blue(), 
-        thickness=2,
-        text_thickness=1,
-        text_scale=0.5
-    )
-
-    counter = 0
+    # initialize HOG descriptor 
+    hog = cv2.HOGDescriptor()
+    hog.setSVMDetector(cv2.HOGDescriptor_getDefaultPeopleDetector())
 
     for frame in read_video(video_path):
-        results = model(frame)[0]
-        detections = sv.Detections.from_yolov8(results)
-        # detections = detections.filter_by_polygon(polygon)
-        detections = detections[detections.class_id == 0]
-        zone.trigger(detections=detections)
-
-        box_coordinates = detections.xyxy
-
-        for box in box_coordinates:
-            x1, y1, x2, y2 = box
-            center_x = int((x1 + x2) / 2)
-            center_y = int((y1 + y2) / 1.5)
-            center_coordinate = (center_x, center_y)
-
-            # Add dot at center coordinate
-            cv2.circle(frame, center_coordinate, 3, (0, 0, 255), -1)
+        # frame = cv2.resize(frame, (640, 480))
 
 
-        box_labels = [
-            f"{model.model.names[class_id]} {confidence:0.2f}"
-            for _, confidence, class_id, _ in detections
-        ]
 
+        # detect humans in input image
+        humans, _ = hog.detectMultiScale(frame, winStride=(10, 10),
+                                          padding=(32, 32), scale=1.1)
 
-        frame = box_annotator.annotate(
-            scene=frame, detections=detections, labels=box_labels)
-        
-        frame = zone_annotator.annotate(frame)
+        # getting no. of human detected
+        print('Human Detected:', len(humans))
+
+        # loop over all detected humans
+        for (x, y, w, h) in humans:
+            pad_w = int(0.15 * w)
+            pad_h = int(0.01 * h)
+            cv2.rectangle(frame, (x + pad_w, y + pad_h), (x + w - pad_w, y + h - pad_h), (0, 255, 0), 2)
+            # Draw label
+            cv2.putText(frame, 'Human', (x + pad_w, y + pad_h - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.9, (0, 255, 0), 2)
 
         cv2.imshow('Frame', frame)
-        if (cv2.waitKey(30) == 27):
+        if cv2.waitKey(30) == 27:
             break
 
     cv2.destroyAllWindows()
