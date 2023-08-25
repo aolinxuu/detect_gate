@@ -2,7 +2,7 @@ import cv2
 import supervision as sv
 import numpy as np
 
-def read_video(self, video_path):
+def read_video(video_path):
     vid = cv2.VideoCapture(video_path)
     print('sucessfully opened video')
     if not vid.isOpened():
@@ -24,7 +24,7 @@ def read_video(self, video_path):
     vid.release()
 
 
-def process_video(self, model, video_path):
+def process_video(model, video_path):
 
     polygon = np.array([
         [0, 150],
@@ -35,23 +35,23 @@ def process_video(self, model, video_path):
     video_info = sv.VideoInfo.from_video_path(video_path=video_path)
     zone = sv.PolygonZone(polygon = polygon, frame_resolution_wh = video_info.resolution_wh)
 
-    # Creates an instance of the BoxAnnotator class from supervision to detect and label
-    box_annotator = sv.BoxAnnotator(
-        thickness=2,
-        text_thickness=1,
-        text_scale=1
-    )
-    zone_annotator = sv.PolygonZoneAnnotator(
-        zone=zone, 
-        color=sv.Color.blue(), 
-        thickness=2,
-        text_thickness=1,
-        text_scale=0.5
-    )
+    # # Creates an instance of the BoxAnnotator class from supervision to detect and label
+    # box_annotator = sv.BoxAnnotator(
+    #     thickness=2,
+    #     text_thickness=1,
+    #     text_scale=1
+    # )
+    # zone_annotator = sv.PolygonZoneAnnotator(
+    #     zone=zone, 
+    #     color=sv.Color.blue(), 
+    #     thickness=2,
+    #     text_thickness=1,
+    #     text_scale=0.5
+    # )
 
     counter = 0
 
-    for frame in self.read_video(video_path):
+    for frame in read_video(video_path):
         results = model(frame)[0]
         detections = sv.Detections.from_yolov8(results)
         # detections = detections.filter_by_polygon(polygon)
@@ -76,13 +76,13 @@ def process_video(self, model, video_path):
         ]
 
 
-        frame = box_annotator.annotate(
-            scene=frame, detections=detections, labels=box_labels)
+        # frame = box_annotator.annotate(
+        #     scene=frame, detections=detections, labels=box_labels)
         
-        frame = zone_annotator.annotate(frame)
+        # frame = zone_annotator.annotate(frame)
 
         cv2.imshow('Frame', frame)
-        if (cv2.waitKey(30) == 27):
+        if (cv2.waitKey(1) == 27):
             break
 
     cv2.destroyAllWindows()
